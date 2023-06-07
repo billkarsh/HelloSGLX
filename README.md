@@ -17,7 +17,7 @@ Your download includes a compiled HelloSGLX.exe, ready to use, nothing
 to build.
 
 >*Fetching realtime stream data is not supported because this mode of
-communication (shell commands) is too slow to make that practical.
+communication (shell commands) is too slow to make that practical.*
 
 ### Who
 
