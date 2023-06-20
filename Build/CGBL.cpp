@@ -23,7 +23,7 @@ static void PrintUsage()
     Log() << "-host=127.0.0.1   ;ip4 SpikeGLX network address";
     Log() << "-port=4142        ;ip4 port";
     Log() << "-args=as_needed   ;optional command arguments";
-    Log() << "------------------------\n";
+    Log() << "------------------------";
 }
 
 /* ---------------------------------------------------------------- */

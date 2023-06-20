@@ -21,7 +21,7 @@ communication (shell commands) is too slow to make that practical.*
 
 ### Who
 
-TheSDK is developed by [Bill Karsh](https://www.janelia.org/people/bill-karsh)
+HelloSGLX is developed by [Bill Karsh](https://www.janelia.org/people/bill-karsh)
 of the [Tim Harris Lab](https://www.janelia.org/lab/harris-lab-apig) at
 HHMI/Janelia Research Campus.
 
@@ -33,6 +33,11 @@ for educational interest.
 
 I build using Qt 5.12.0 (MinGW 64-bit). Compiled components include
 supporting DLLs from that Qt version.
+
+### Compiled Software
+
+Official release software and support materials are here:
+[**SpikeGLX Download Page**](http://billkarsh.github.io/SpikeGLX).
 
 ### Licensing
 
