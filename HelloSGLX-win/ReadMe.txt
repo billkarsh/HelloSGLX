@@ -20,7 +20,7 @@ Commands:
 Returns lines: version, host, port.
 
 -cmd=enumDataDir [-args=idir] (default 0)
-Retrieve a listing of files in the ith data directory.
+Retrieve a listing of files in idir data directory.
 Get main data directory by setting idir=0 or omitting it.
 
 -cmd=getDataDir [-args=idir] (default 0)

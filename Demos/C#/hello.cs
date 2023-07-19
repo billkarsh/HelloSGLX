@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Diagnostics;
 using System.IO;
 
@@ -25,7 +20,14 @@ namespace ConsoleApplication1
             sgl.Start();
 
             StreamReader rdr = sgl.StandardOutput;
-            Console.WriteLine("[["+rdr.ReadToEnd().Trim()+"]]");
+            string result = rdr.ReadToEnd().Trim();
+
+            // Output result can next be split, e.g.:
+            // string[] parts = result.split('\n');
+            // And applicable parts can be converted to numbers, e.g.:
+            // double d = Convert.ToDouble(parts[0]);
+
+            Console.WriteLine("[["+result+"]]");
             sgl.WaitForExit();
 
             long end = Stopwatch.GetTimestamp();
