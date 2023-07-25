@@ -19,6 +19,7 @@ private:
     void justConnect();
     void enumDataDir();
     void getDataDir();
+    void getGeomMap();
     void getImecChanGains();
     void getParams();
     void getParamsImecCommon();

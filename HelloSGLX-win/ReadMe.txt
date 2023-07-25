@@ -27,6 +27,21 @@ Get main data directory by setting idir=0 or omitting it.
 Get ith global data directory.
 Get main data directory by setting idir=0 or omitting it.
 
+-cmd=getGeomMap [-args=ip] (default 0)
+Get imec parameters for given logical probe.
+Returns lines: key=value.
+Header fields:
+  head_partNumber
+  head_numShanks
+  head_shankPitch   ; microns
+  head_shankWidth   ; microns
+Channel 5, e.g.:
+  ch5_s   ; shank index
+  ch5_x   ; microns from left edge of shank
+  ch5_z   ; microns from center of tip-most electrode row
+  ch5_u   ; used-flag (in CAR operations)
+Note: Fields are sorted into ascending alphanumeric order.
+
 -cmd=getImecChanGains -args=ip\nchan
 Returns lines: AP and LF gain for given probe and channel.
 

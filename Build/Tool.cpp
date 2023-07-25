@@ -29,6 +29,8 @@ void Tool::entrypoint()
         enumDataDir();
     else if( GBL.cmd == "getDataDir" )
         getDataDir();
+    else if( GBL.cmd == "getGeomMap" )
+        getGeomMap();
     else if( GBL.cmd == "getImecChanGains" )
         getImecChanGains();
     else if( GBL.cmd == "getParams" )
@@ -169,6 +171,39 @@ void Tool::getDataDir()
 
         if( sglx_getDataDir( str, S, GBL.args.toInt() ) )
             Log() << str.c_str();
+        else
+            goto error;
+
+        sglx_close( S );
+    }
+    else {
+error:
+        printf( "error [%s]\n", S.err.c_str() );
+    }
+}
+
+
+void Tool::getGeomMap()
+{
+    t_sglxconn  S;
+
+    if( sglx_connect_std( S, GBL.host ) ) {
+
+        map<string,string>   mstrstr;
+
+        if( sglx_getGeomMap( mstrstr, S, GBL.args.toInt() ) ) {
+
+            map<string,string>::iterator
+                it  = mstrstr.begin(),
+                end = mstrstr.end();
+
+            while( it != end ) {
+                Log() << QString("%1=%2")
+                    .arg( it->first.c_str() )
+                    .arg( it->second.c_str() );
+                ++it;
+            }
+        }
         else
             goto error;
 
