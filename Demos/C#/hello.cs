@@ -10,9 +10,13 @@ namespace ConsoleApplication1
         {
             long start = Stopwatch.GetTimestamp();
 
+            // Note that \" delimiters can be used around strings, like
+            // file paths or text arguments, that may contain white-space
+            // characters.
+
             Process sgl = new Process();
-            sgl.StartInfo.FileName = "C:/Users/labadmin/Desktop/HelloSGLX-win/HelloSGLX.exe";
-            sgl.StartInfo.Arguments = "-host=127.0.0.1 -cmd=getVersion";
+            sgl.StartInfo.FileName = "\"C:/Users/labadmin/Desktop/HelloSGLX-win/HelloSGLX.exe\"";
+            sgl.StartInfo.Arguments = "-host=127.0.0.1 -cmd=getImecChanGains -args=\"0\n0\"";
             sgl.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             sgl.StartInfo.UseShellExecute = false;
             sgl.StartInfo.RedirectStandardOutput = true;
