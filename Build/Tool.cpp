@@ -124,103 +124,100 @@ void Tool::justConnect()
 {
     printf( "\nCalling connect...\n\n" );
 
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
-        printf( "vers %s\n", S.vers.c_str() );
-        printf( "host %s\n", S.host.c_str() );
-        printf( "port %d\n", S.port );
-        sglx_close( S );
+    if( sglx_connect( hSglx, GBL.host ) ) {
+        printf( "vers %s\n", sglx_getVersion( hSglx ) );
+        sglx_close( hSglx );
     }
     else
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::enumDataDir()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        vector<string>  vstr;
+        cppClient_sglx_get_strs vs;
 
-        if( sglx_enumDataDir( vstr, S, GBL.args.toInt() ) ) {
-            for( int i = 0, n = vstr.size(); i < n; ++i )
-                Log() << vstr[i].c_str();
+        if( sglx_enumDataDir( vs, hSglx, GBL.args.toInt() ) ) {
+            for( int i = 0, n = vs.vstr.size(); i < n; ++i )
+                Log() << vs.vstr[i].c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getDataDir()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         string str;
 
-        if( sglx_getDataDir( str, S, GBL.args.toInt() ) )
+        if( sglx_getDataDir( str, hSglx, GBL.args.toInt() ) )
             Log() << str.c_str();
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getGeomMap()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        map<string,string>   mstrstr;
+        cppClient_sglx_get_strs vs;
 
-        if( sglx_getGeomMap( mstrstr, S, GBL.args.toInt() ) ) {
-
-            map<string,string>::iterator
-                it  = mstrstr.begin(),
-                end = mstrstr.end();
-
-            while( it != end ) {
-                Log() << QString("%1=%2")
-                    .arg( it->first.c_str() )
-                    .arg( it->second.c_str() );
-                ++it;
-            }
+        if( sglx_getGeomMap( vs, hSglx, GBL.args.toInt() ) ) {
+            for( int i = 0, n = vs.vstr.size(); i < n; ++i )
+                Log() << vs.vstr[i].c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getImecChanGains()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -233,203 +230,181 @@ void Tool::getImecChanGains()
 
         double  ap, lf;
 
-        if( sglx_getImecChanGains( ap, lf, S, sl[0].toInt(), sl[1].toInt() ) ) {
+        if( sglx_getImecChanGains( ap, lf, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
             Log() << ap;
             Log() << lf;
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getParams()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        map<string,string>   mstrstr;
+        cppClient_sglx_get_strs vs;
 
-        if( sglx_getParams( mstrstr, S ) ) {
-
-            map<string,string>::iterator
-                it  = mstrstr.begin(),
-                end = mstrstr.end();
-
-            while( it != end ) {
-                Log() << QString("%1=%2")
-                    .arg( it->first.c_str() )
-                    .arg( it->second.c_str() );
-                ++it;
-            }
+        if( sglx_getParams( vs, hSglx ) ) {
+            for( int i = 0, n = vs.vstr.size(); i < n; ++i )
+                Log() << vs.vstr[i].c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getParamsImecCommon()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        map<string,string>   mstrstr;
+        cppClient_sglx_get_strs vs;
 
-        if( sglx_getParamsImecCommon( mstrstr, S ) ) {
-
-            map<string,string>::iterator
-                it  = mstrstr.begin(),
-                end = mstrstr.end();
-
-            while( it != end ) {
-                Log() << QString("%1=%2")
-                    .arg( it->first.c_str() )
-                    .arg( it->second.c_str() );
-                ++it;
-            }
+        if( sglx_getParamsImecCommon( vs, hSglx ) ) {
+            for( int i = 0, n = vs.vstr.size(); i < n; ++i )
+                Log() << vs.vstr[i].c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getParamsImecProbe()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        map<string,string>   mstrstr;
+        cppClient_sglx_get_strs vs;
 
-        if( sglx_getParamsImecProbe( mstrstr, S, GBL.args.toInt() ) ) {
-
-            map<string,string>::iterator
-                it  = mstrstr.begin(),
-                end = mstrstr.end();
-
-            while( it != end ) {
-                Log() << QString("%1=%2")
-                    .arg( it->first.c_str() )
-                    .arg( it->second.c_str() );
-                ++it;
-            }
+        if( sglx_getParamsImecProbe( vs, hSglx, GBL.args.toInt() ) ) {
+            for( int i = 0, n = vs.vstr.size(); i < n; ++i )
+                Log() << vs.vstr[i].c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getParamsOneBox()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        map<string,string>   mstrstr;
+        cppClient_sglx_get_strs vs;
 
-        if( sglx_getParamsOneBox( mstrstr, S, GBL.args.toInt() ) ) {
-
-            map<string,string>::iterator
-                it  = mstrstr.begin(),
-                end = mstrstr.end();
-
-            while( it != end ) {
-                Log() << QString("%1=%2")
-                    .arg( it->first.c_str() )
-                    .arg( it->second.c_str() );
-                ++it;
-            }
+        if( sglx_getParamsOneBox( vs, hSglx, GBL.args.toInt() ) ) {
+            for( int i = 0, n = vs.vstr.size(); i < n; ++i )
+                Log() << vs.vstr[i].c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getProbeList()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         string str;
 
-        if( sglx_getProbeList( str, S ) )
+        if( sglx_getProbeList( str, hSglx ) )
             Log() << str.c_str();
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getRunName()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         string str;
 
-        if( sglx_getRunName( str, S ) )
+        if( sglx_getRunName( str, hSglx ) )
             Log() << str.c_str();
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamAcqChans()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -440,29 +415,31 @@ void Tool::getStreamAcqChans()
             return;
         }
 
-        vector<int> vi32;
+        cppClient_sglx_get_ints vi;
 
-        if( sglx_getStreamAcqChans( vi32, S, sl[0].toInt(), sl[1].toInt() ) ) {
-            for( int i = 0, n = vi32.size(); i < n; ++i )
-                Log() << QString("%1").arg( vi32[i] );
+        if( sglx_getStreamAcqChans( vi, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
+            for( int i = 0, n = vi.vint.size(); i < n; ++i )
+                Log() << QString("%1").arg( vi.vint[i] );
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamI16ToVolts()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -475,26 +452,28 @@ void Tool::getStreamI16ToVolts()
 
         double  mult;
 
-        if( sglx_getStreamI16ToVolts( mult, S, sl[0].toInt(), sl[1].toInt(), sl[2].toInt() ) ) {
+        if( sglx_getStreamI16ToVolts( mult, hSglx, sl[0].toInt(), sl[1].toInt(), sl[2].toInt() ) ) {
             Log() << mult;
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamMaxInt()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -507,47 +486,51 @@ void Tool::getStreamMaxInt()
 
         int maxi;
 
-        if( sglx_getStreamMaxInt( maxi, S, sl[0].toInt(), sl[1].toInt() ) )
+        if( sglx_getStreamMaxInt( maxi, hSglx, sl[0].toInt(), sl[1].toInt() ) )
             Log() << maxi;
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamNP()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         int np;
 
-        if( sglx_getStreamNP( np, S, GBL.args.toInt() ) )
+        if( sglx_getStreamNP( np, hSglx, GBL.args.toInt() ) )
             Log() << np;
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamSampleRate()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -558,23 +541,21 @@ void Tool::getStreamSampleRate()
             return;
         }
 
-        Log() <<
-        sglx_getStreamSampleRate( S, sl[0].toInt(), sl[1].toInt() );
+        Log() << sglx_getStreamSampleRate( hSglx, sl[0].toInt(), sl[1].toInt() );
+        sglx_close( hSglx );
+    }
+    else
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
 
-        sglx_close( S );
-    }
-    else {
-error:
-        printf( "error [%s]\n", S.err.c_str() );
-    }
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamSaveChans()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -585,29 +566,31 @@ void Tool::getStreamSaveChans()
             return;
         }
 
-        vector<int> vi32;
+        cppClient_sglx_get_ints vi;
 
-        if( sglx_getStreamSaveChans( vi32, S, sl[0].toInt(), sl[1].toInt() ) ) {
-            for( int i = 0, n = vi32.size(); i < n; ++i )
-                Log() << QString("%1").arg( vi32[i] );
+        if( sglx_getStreamSaveChans( vi, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
+            for( int i = 0, n = vi.vint.size(); i < n; ++i )
+                Log() << QString("%1").arg( vi.vint[i] );
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamSN()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -621,27 +604,29 @@ void Tool::getStreamSN()
         string  sn;
         int     slot;
 
-        if( sglx_getStreamSN( slot, sn, S, sl[0].toInt(), sl[1].toInt() ) ) {
+        if( sglx_getStreamSN( slot, sn, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
             Log() << slot;
             Log() << sn.c_str();
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getStreamVoltageRange()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -654,132 +639,131 @@ void Tool::getStreamVoltageRange()
 
         double  lo, hi;
 
-        if( sglx_getStreamVoltageRange( lo, hi, S, sl[0].toInt(), sl[1].toInt() ) ) {
+        if( sglx_getStreamVoltageRange( lo, hi, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
             Log() << lo;
             Log() << hi;
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getTime()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
-
-        Log() << sglx_getTime( S );
-
-        sglx_close( S );
+    if( sglx_connect( hSglx, GBL.host ) ) {
+        Log() << sglx_getTime( hSglx );
+        sglx_close( hSglx );
     }
-    else {
-error:
-        printf( "error [%s]\n", S.err.c_str() );
-    }
+    else
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::getVersion()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
-
-        string  s;
-
-        if( sglx_getVersion( s, S ) )
-            Log() << s.c_str();
-        else
-            goto error;
-
-        sglx_close( S );
+    if( sglx_connect( hSglx, GBL.host ) ) {
+        Log() << sglx_getVersion( hSglx );
+        sglx_close( hSglx );
     }
-    else {
-error:
-        printf( "error [%s]\n", S.err.c_str() );
-    }
+    else
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::isInitialized()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         bool    ready;
 
-        if( sglx_isInitialized( ready, S ) )
+        if( sglx_isInitialized( ready, hSglx ) )
             Log() << ready;
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::isRunning()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         bool    running;
 
-        if( sglx_isRunning( running, S ) )
+        if( sglx_isRunning( running, hSglx ) )
             Log() << running;
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::isSaving()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         bool    saving;
 
-        if( sglx_isSaving( saving, S ) )
+        if( sglx_isSaving( saving, hSglx ) )
             Log() << saving;
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::isUserOrder()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -792,26 +776,28 @@ void Tool::isUserOrder()
 
         bool    usr;
 
-        if( sglx_isUserOrder( usr, S, sl[0].toInt(), sl[1].toInt() ) ) {
+        if( sglx_isUserOrder( usr, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
             Log() << usr;
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::opto_emit()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -822,23 +808,25 @@ void Tool::opto_emit()
             return;
         }
 
-        if( !sglx_opto_emit( S, sl[0].toInt(), sl[1].toInt(), sl[2].toInt() ) )
+        if( !sglx_opto_emit( hSglx, sl[0].toInt(), sl[1].toInt(), sl[2].toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::opto_getAttenuations()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
@@ -849,460 +837,500 @@ void Tool::opto_getAttenuations()
             return;
         }
 
-        vector<double>  vdbl;
+        cppClient_sglx_get_dbls vd;
 
-        if( sglx_opto_getAttenuations( vdbl, S, sl[0].toInt(), sl[1].toInt() ) ) {
-            for( int i = 0, n = vdbl.size(); i < n; ++i )
-                Log() << vdbl[i];
+        if( sglx_opto_getAttenuations( vd, hSglx, sl[0].toInt(), sl[1].toInt() ) ) {
+            for( int i = 0, n = vd.vdbl.size(); i < n; ++i )
+                Log() << vd.vdbl[i];
         }
         else
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setAnatomy_Pinpoint()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_setAnatomy_Pinpoint( S, GBL.args.toStdString() ) )
+        if( !sglx_setAnatomy_Pinpoint( hSglx, GBL.args.toStdString() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setAudioEnable()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_setAudioEnable( S, GBL.args.toInt() ) )
+        if( !sglx_setAudioEnable( hSglx, GBL.args.toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setAudioParams()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        map<string,string>  mstrstr;
+        cppClient_sglx_set_keyvals  kv;
 
         for( int i = 1, n = sl.size(); i < n; ++i ) {
             const string    &s = sl[i].toStdString();
             int             eq = s.find( '=' );
-            mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
+            kv.mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
         }
 
-        if( !sglx_setAudioParams( S, sl[0].toStdString(), mstrstr ) )
+        if( !sglx_setAudioParams( hSglx, sl[0].toStdString(), kv ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setDataDir()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        if( !sglx_setDataDir( S, sl[0].toInt(), sl[1].toStdString() ) )
+        if( !sglx_setDataDir( hSglx, sl[0].toInt(), sl[1].toStdString() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setDigitalOut()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        if( !sglx_setDigitalOut( S, sl[0].toInt(), sl[1].toStdString() ) )
+        if( !sglx_setDigitalOut( hSglx, sl[0].toInt(), sl[1].toStdString() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setMetadata()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        map<string,string>  mstrstr;
+        cppClient_sglx_set_keyvals  kv;
 
         for( int i = 0, n = sl.size(); i < n; ++i ) {
             const string    &s = sl[i].toStdString();
             int             eq = s.find( '=' );
-            mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
+            kv.mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
         }
 
-        if( !sglx_setMetadata( S, mstrstr ) )
+        if( !sglx_setMetadata( hSglx, kv ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setMultiDriveEnable()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_setMultiDriveEnable( S, GBL.args.toInt() ) )
+        if( !sglx_setMultiDriveEnable( hSglx, GBL.args.toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setNextFileName()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_setNextFileName( S, GBL.args.toStdString() ) )
+        if( !sglx_setNextFileName( hSglx, GBL.args.toStdString() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setParams()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        map<string,string>  mstrstr;
+        cppClient_sglx_set_keyvals  kv;
 
         for( int i = 0, n = sl.size(); i < n; ++i ) {
             const string    &s = sl[i].toStdString();
             int             eq = s.find( '=' );
-            mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
+            kv.mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
         }
 
-        if( !sglx_setParams( S, mstrstr ) )
+        if( !sglx_setParams( hSglx, kv ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setParamsImecCommon()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        map<string,string>  mstrstr;
+        cppClient_sglx_set_keyvals  kv;
 
         for( int i = 0, n = sl.size(); i < n; ++i ) {
             const string    &s = sl[i].toStdString();
             int             eq = s.find( '=' );
-            mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
+            kv.mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
         }
 
-        if( !sglx_setParamsImecCommon( S, mstrstr ) )
+        if( !sglx_setParamsImecCommon( hSglx, kv ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setParamsImecProbe()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        map<string,string>  mstrstr;
+        cppClient_sglx_set_keyvals  kv;
 
         for( int i = 1, n = sl.size(); i < n; ++i ) {
             const string    &s = sl[i].toStdString();
             int             eq = s.find( '=' );
-            mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
+            kv.mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
         }
 
-        if( !sglx_setParamsImecProbe( S, mstrstr, sl[0].toInt() ) )
+        if( !sglx_setParamsImecProbe( hSglx, kv, sl[0].toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setParamsOneBox()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        map<string,string>  mstrstr;
+        cppClient_sglx_set_keyvals  kv;
 
         for( int i = 1, n = sl.size(); i < n; ++i ) {
             const string    &s = sl[i].toStdString();
             int             eq = s.find( '=' );
-            mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
+            kv.mstrstr[s.substr( 0, eq )] = s.substr( eq + 1 );
         }
 
-        if( !sglx_setParamsOneBox( S, mstrstr, sl[0].toInt() ) )
+        if( !sglx_setParamsOneBox( hSglx, kv, sl[0].toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setRecordingEnable()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_setRecordingEnable( S, GBL.args.toInt() ) )
+        if( !sglx_setRecordingEnable( hSglx, GBL.args.toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setRunName()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_setRunName( S, GBL.args.toStdString() ) )
+        if( !sglx_setRunName( hSglx, GBL.args.toStdString() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setTriggerOffBeep()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        if( !sglx_setTriggerOffBeep( S, sl[0].toInt(), sl[1].toInt() ) )
+        if( !sglx_setTriggerOffBeep( hSglx, sl[0].toInt(), sl[1].toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::setTriggerOnBeep()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        if( !sglx_setTriggerOnBeep( S, sl[0].toInt(), sl[1].toInt() ) )
+        if( !sglx_setTriggerOnBeep( hSglx, sl[0].toInt(), sl[1].toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::startRun()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         string  run;
 
         if( !GBL.args.isEmpty() )
             run = GBL.args.toStdString();
 
-        if( !sglx_startRun( S, run ) )
+        if( !sglx_startRun( hSglx, run ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::stopRun()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
-        if( !sglx_stopRun( S ) )
+        if( !sglx_stopRun( hSglx ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
 void Tool::triggerGT()
 {
-    t_sglxconn  S;
+    void    *hSglx = sglx_createHandle_std();
 
-    if( sglx_connect_std( S, GBL.host ) ) {
+    if( sglx_connect( hSglx, GBL.host ) ) {
 
         const QStringList   sl = GBL.args.split(
                                     QRegExp("\\s+"),
                                     QString::SkipEmptyParts );
 
-        if( !sglx_triggerGT( S, sl[0].toInt(), sl[1].toInt() ) )
+        if( !sglx_triggerGT( hSglx, sl[0].toInt(), sl[1].toInt() ) )
             goto error;
 
-        sglx_close( S );
+        sglx_close( hSglx );
     }
     else {
 error:
-        printf( "error [%s]\n", S.err.c_str() );
+        printf( "error [%s]\n", sglx_getError( hSglx ) );
     }
+
+    sglx_destroyHandle( hSglx );
 }
 
 
