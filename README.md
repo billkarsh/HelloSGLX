@@ -36,8 +36,7 @@ supporting DLLs from that Qt version.
 
 ### Compiled Software
 
-Official release software and support materials are here:
-[**SpikeGLX Download Page**](http://billkarsh.github.io/SpikeGLX).
+Included in download.
 
 ### Licensing
 
