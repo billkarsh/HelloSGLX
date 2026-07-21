@@ -62,7 +62,7 @@ Get parameters for given logical OneBox.
 Returns lines: key=value.
 
 -cmd=getProbeList
-Returns string: (probeID,nShanks,partNumber)()...
+Returns string: (probeID,nShanks,partNumber)...
 - A parenthesized entry for each selected probe.
 - probeID: zero-based integer.
 - nShanks: integer {1,4}.
@@ -134,7 +134,7 @@ color: {0=blue, 1=red}.
 
 -cmd=setAnatomy_Pinpoint -args=string
 Set anatomy data string with Pinpoint format:
-[probe-id,shank-id](startpos,endpos,R,G,B,rgnname)(startpos,endpos,R,G,B,rgnname)…()
+[probe-id,shank-id](startpos,endpos,R,G,B,rgnname)...(startpos,endpos,R,G,B,rgnname)
 - probe-id: SpikeGLX logical probe id.
 - shank-id: [0..n-shanks].
 - startpos: region start in microns from tip.
